@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ml">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SSLC ICT Model Exam 2026 - Created by Nishan">
+    <title>SSLC ICT മോഡൽ പരീക്ഷ 2026 - OpenToonz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Manjari:wght@400;700&display=swap');
+        body { font-family: 'Manjari', sans-serif; scroll-behavior: smooth; }
+        .sticky-timer { position: sticky; top: 0; z-index: 50; }
+        .hidden { display: none; }
+        .locked-section { 
+            filter: blur(12px); 
+            pointer-events: none; 
+            opacity: 0.4; 
+            transition: all 0.8s ease;
+        }
+        .unlocked-section { 
+            filter: blur(0); 
+            pointer-events: auto; 
+            opacity: 1;
+        }
+        
+        /* Answer Styles */
+        .option-correct {
+            background-color: #d1fae5 !important; 
+            border-color: #10b981 !important; 
+            color: #065f46 !important;
+        }
+        .option-wrong {
+            background-color: #fee2e2 !important; 
+            border-color: #ef4444 !important; 
+            color: #991b1b !important;
+        }
+        .option-disabled {
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        .pulse-button {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(79, 70, 229, 0); }
+        }
+        
+        .hint-box {
+            @apply bg-white/60 p-4 rounded-xl border mt-3;
+        }
+        .hint-title {
+            @apply text-[10px] font-black uppercase tracking-wider mb-2 flex items-center;
+        }
+        /* Page Loader Animation */
+        .loader-active { overflow: hidden; }
+    </style>
+</head>
+<body class="bg-slate-100 text-gray-900 flex flex-col min-h-screen">
+
+    <!-- Header & Timer -->
+    <header id="main-header" class="bg-indigo-900 text-white shadow-lg sticky-timer p-4 hidden">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">ICT പരീക്ഷ - 2026</h1>
+                <p id="user-info-display" class="text-xs text-indigo-200 font-bold"></p>
+            </div>
+            <div id="timer-display" class="bg-white text-indigo-900 px-4 py-2 rounded-lg font-bold text-lg shadow-inner">
+                സമയം: <span id="timer">60:00</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-5xl mx-auto p-4 sm:p-8 flex-grow">
+        
+        <!-- Login Screen -->
+        <div id="login-screen" class="bg-white p-8 md:p-12 rounded-3xl shadow-2xl max-w-lg mx-auto border border-gray-200 mt-10 relative overflow-hidden">
+            <!-- Credits Badge -->
+            <div class="absolute -right-12 top-6 bg-indigo-600 text-white py-1 px-12 rotate-45 text-[10px] font-bold shadow-sm">
+                CREATED BY NISHAN
+            </div>
+
+            <div class="text-center mb-8">
+                <div class="bg-indigo-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 00-2 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-indigo-950">വിദ്യാർത്ഥി ലോഗിൻ 2026</h2>
+                <p class="text-gray-500 mt-2">വിവരങ്ങൾ നൽകി പരീക്ഷ ആരംഭിക്കുക</p>
+            </div>
+
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">വിദ്യാർത്ഥിയുടെ പേര്</label>
+                    <input type="text" id="student-name" placeholder="പേര് നൽകുക" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">രജിസ്റ്റർ നമ്പർ</label>
+                    <input type="text" id="reg-number" placeholder="Reg. No" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+                <div>
+                    <label class="block text-sm font-bold text-gray-700 mb-1">പാസ്‌വേഡ് (Password)</label>
+                    <input type="password" id="login-pass" placeholder="••••••" class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-indigo-500 outline-none transition-all">
+                </div>
+                
+                <div id="error-msg" class="text-red-600 text-sm font-bold hidden text-center bg-red-50 p-2 rounded-lg border border-red-200">
+                    വിവരങ്ങൾ തെറ്റാണ്!
+                </div>
+
+                <button onclick="validateLogin()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-4 rounded-xl font-bold text-lg shadow-lg transition-all active:scale-95">
+                    ലോഗിൻ ചെയ്യുക
+                </button>
+            </div>
+            
+            <p class="text-center text-[10px] text-gray-400 mt-6 uppercase tracking-widest">Designed by Nishan</p>
+        </div>
+
+        <!-- Exam Content -->
+        <div id="exam-content" class="hidden space-y-12">
+            <!-- Theory Section -->
+            <section id="theory-section" class="bg-white p-6 md:p-10 rounded-2xl shadow-lg border-t-4 border-indigo-600">
+                <div class="flex flex-col md:flex-row md:items-center justify-between mb-8">
+                    <h3 class="text-2xl font-bold text-indigo-800 flex items-center">
+                        <span class="bg-indigo-100 p-2 rounded-lg mr-3 text-lg">A</span>
+                        വിഭാഗം എ: തിയറി ചോദ്യങ്ങൾ
+                    </h3>
+                    <div class="text-indigo-600 font-bold bg-indigo-50 px-4 py-2 rounded-full mt-2 md:mt-0">
+                        പൂർത്തിയാക്കിയവ: <span id="count">0</span> / 20
+                    </div>
+                </div>
+                
+                <div id="questions-grid" class="space-y-8">
+                    <!-- Dynamic Questions -->
+                </div>
+
+                <div id="status-card" class="mt-12 p-8 bg-amber-50 rounded-2xl border border-amber-200 text-center">
+                    <div class="w-full bg-amber-200 h-4 rounded-full overflow-hidden mb-4">
+                        <div id="progress-bar" class="bg-amber-600 h-full w-0 transition-all duration-300"></div>
+                    </div>
+                    
+                    <div id="theory-confirm-box">
+                        <p id="lock-msg" class="text-amber-800 font-semibold mb-4 italic">എല്ലാ ചോദ്യങ്ങൾക്കും ഉത്തരം നൽകിയാൽ മാത്രമേ പ്രാക്ടിക്കൽ വിഭാഗം തുറക്കാൻ കഴിയൂ.</p>
+                        <button id="proceed-btn" disabled onclick="unlockPractical()" class="opacity-50 cursor-not-allowed bg-indigo-600 text-white px-8 py-4 rounded-2xl font-bold text-lg shadow-xl transition-all">
+                            പ്രാക്ടിക്കൽ വിഭാഗത്തിലേക്ക് കടക്കുക
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Practical Section -->
+            <div id="practical-wrapper" class="locked-section">
+                <section class="bg-white p-6 md:p-10 rounded-2xl shadow-lg border-t-4 border-green-600">
+                    <h3 class="text-2xl font-bold mb-8 text-green-800 flex items-center">
+                        <span class="bg-green-100 p-2 rounded-lg mr-3 text-lg">B</span>
+                        പ്രാക്ടിക്കൽ പ്രവർത്തനങ്ങൾ
+                    </h3>
+                    
+                    <div class="grid grid-cols-1 gap-6">
+                        <div class="p-6 bg-green-50 rounded-2xl border border-green-100 shadow-sm">
+                            <h4 class="font-bold text-green-900 text-xl mb-2">1. OpenToonz: ആനിമേഷൻ</h4>
+                            <p class="text-gray-700 leading-relaxed">OpenToonz ഉപയോഗിച്ച് ഒരു പന്ത് ഇടത്തുനിന്ന് വലത്തോട്ട് ഉരുളുന്ന ആനിമേഷൻ തയ്യാറാക്കുക.</p>
+                            <div class="hint-box border-green-200">
+                                <h5 class="hint-title text-green-800 underline decoration-green-300">സൂചനകൾ (Hints)</h5>
+                                <ul class="text-sm text-green-900 space-y-1 list-disc list-inside">
+                                    <li><b>Geometric Tool</b> ഉപയോഗിച്ച് വൃത്തം വരയ്ക്കാം.</li>
+                                    <li>ആദ്യ ഫ്രെയിമിലും അവസാന ഫ്രെയിമിലും <b>Keyframes</b> നൽകുക.</li>
+                                    <li><b>Animate Tool</b> ഉപയോഗിച്ച് പന്തിന്റെ സ്ഥാനം മാറ്റുക.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-cyan-50 rounded-2xl border border-cyan-100 shadow-sm">
+                            <h4 class="font-bold text-cyan-900 text-xl mb-2">2. PictoBlox: AI പ്രോഗ്രാമിംഗ്</h4>
+                            <p class="text-gray-700 leading-relaxed mb-4">ക്യാമറയ്ക്ക് മുന്നിലുള്ള വസ്തുവിനെ തിരിച്ചറിഞ്ഞ് അതിന്റെ പേര് പറയുന്ന പ്രോഗ്രാം തയ്യാറാക്കുക.</p>
+                            <div class="hint-box border-cyan-200">
+                                <h5 class="hint-title text-cyan-800 underline decoration-cyan-300">സൂചനകൾ (Hints)</h5>
+                                <ul class="text-sm text-cyan-900 space-y-1 list-disc list-inside">
+                                    <li><b>Object Detection</b>, <b>Text to Speech</b> എക്സ്റ്റൻഷനുകൾ ചേർക്കുക.</li>
+                                    <li><b>'analyze image from camera'</b> ബ്ലോക്ക് ഉപയോഗിക്കുക.</li>
+                                    <li><b>'speak [object name]'</b> ബ്ലോക്ക് ഉപയോഗിച്ച് ശബ്ദം നൽകുക.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-blue-50 rounded-2xl border border-blue-100 shadow-sm">
+                            <h4 class="font-bold text-blue-900 text-xl mb-2">3. Inkscape: ലോഗോ നിർമ്മാണം</h4>
+                            <p class="text-gray-700 leading-relaxed">ഒരു സ്കൂൾ ക്ലബ്ബിന് വേണ്ടി ലളിതമായ ഒരു ലോഗോ തയ്യാറാക്കുക.</p>
+                            <div class="hint-box border-blue-200">
+                                <h5 class="hint-title text-blue-800 underline decoration-blue-300">സൂചനകൾ (Hints)</h5>
+                                <ul class="text-sm text-blue-900 space-y-1 list-disc list-inside">
+                                    <li><b>Circle/Square</b> ടൂളുകൾ ഉപയോഗിച്ച് ഷേപ്പുകൾ വരയ്ക്കുക.</li>
+                                    <li><b>Text Tool (T)</b> ഉപയോഗിച്ച് ക്ലബ്ബിന്റെ പേര് നൽകുക.</li>
+                                    <li><b>Fill and Stroke</b> വിൻഡോയിൽ നിന്ന് ഗ്രേഡിയന്റ് നിറങ്ങൾ തിരഞ്ഞെടുക്കാം.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-purple-50 rounded-2xl border border-purple-100 shadow-sm">
+                            <h4 class="font-bold text-purple-900 text-xl mb-2">4. LibreOffice Base: ഡാറ്റാബേസ്</h4>
+                            <p class="text-gray-700 leading-relaxed">'School_Library' ഡാറ്റാബേസിൽ 'Books' ടേബിൾ നിർമ്മിച്ച് ഡാറ്റ ചേർക്കുക.</p>
+                            <div class="hint-box border-purple-200">
+                                <h5 class="hint-title text-purple-800 underline decoration-purple-300">സൂചനകൾ (Hints)</h5>
+                                <ul class="text-sm text-purple-900 space-y-1 list-disc list-inside">
+                                    <li><b>Create Table in Design View</b> തിരഞ്ഞെടുക്കുക.</li>
+                                    <li>Book_ID-ക്ക് <b>Primary Key</b> നൽകാൻ മറക്കരുത്.</li>
+                                    <li>ഫീൽഡ് ടൈപ്പുകൾ (Text, Number) കൃത്യമായി നൽകുക.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-orange-50 rounded-2xl border border-orange-100 shadow-sm">
+                            <h4 class="font-bold text-orange-900 text-xl mb-2">5. QGIS: ലെയർ മാനേജ്‌മെന്റ്</h4>
+                            <p class="text-gray-700 leading-relaxed">കേരള ഭൂപടത്തിൽ നിങ്ങളുടെ ജില്ല ഹൈലൈറ്റ് ചെയ്ത് ലേബലുകൾ നൽകുക.</p>
+                            <div class="hint-box border-orange-200">
+                                <h5 class="hint-title text-orange-800 underline decoration-orange-300">സൂചനകൾ (Hints)</h5>
+                                <ul class="text-sm text-orange-900 space-y-1 list-disc list-inside">
+                                    <li><b>Vector Layer</b> ആയി കേരള മാപ്പ് ചേർക്കുക.</li>
+                                    <li><b>Select Feature</b> ടൂൾ ഉപയോഗിച്ച് ജില്ല തിരഞ്ഞെടുക്കുക.</li>
+                                    <li><b>Layer Properties -> Labels</b> എന്നതിൽ സിംഗിൾ ലേബൽ നൽകുക.</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="p-6 bg-pink-50 rounded-2xl border border-pink-100 shadow-sm">
+                            <h4 class="font-bold text-pink-900 text-xl mb-2">6. Python Turtle: ഡിസൈൻ</h4>
+                            <p class="text-gray-700 leading-relaxed">പൈത്തൺ ടർട്ടിൽ ഉപയോഗിച്ച് ഒരു ചുവന്ന സമചതുരം (Square) നിർമ്മിക്കുക.</p>
+                            <div class="hint-box border-pink-200">
+                                <h5 class="hint-title text-pink-800 underline decoration-pink-300">സൂചനകൾ (Hints)</h5>
+                                <ul class="text-sm text-pink-900 space-y-1 list-disc list-inside">
+                                    <li><b>import turtle</b> എന്ന വരി ആദ്യം എഴുതുക.</li>
+                                    <li><b>color('red')</b>, <b>pensize(5)</b> എന്നീ കമാൻഡുകൾ ഉപയോഗിക്കുക.</li>
+                                    <li><b>for i in range(4):</b> ലൂപ്പ് ഉപയോഗിച്ച് ചിത്രം വരയ്ക്കാം.</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 flex justify-center">
+                        <button onclick="finishExam()" class="bg-red-600 hover:bg-red-700 text-white px-16 py-5 rounded-2xl font-bold text-xl shadow-xl transition-all active:scale-95">
+                            പരീക്ഷ സബ്മിറ്റ് ചെയ്യുക
+                        </button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden bg-white p-12 rounded-3xl shadow-2xl text-center max-w-2xl mx-auto mt-10">
+            <div id="result-icon" class="text-8xl mb-6">🎯</div>
+            <h2 class="text-3xl font-bold text-indigo-950 mb-2">പരീക്ഷ പൂർത്തിയായി!</h2>
+            <div id="result-data" class="bg-indigo-50 p-8 rounded-3xl my-6 text-left space-y-3 border border-indigo-100"></div>
+            <button onclick="location.reload()" class="bg-indigo-600 text-white px-10 py-4 rounded-xl font-bold shadow-lg">ലോഗൗട്ട്</button>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-6 mt-10">
+        <div class="max-w-5xl mx-auto px-4 flex flex-col items-center justify-center space-y-2">
+            <p class="text-gray-500 text-sm">© 2026 SSLC ICT Portal. All rights reserved.</p>
+            <div class="flex items-center space-x-2 text-indigo-600 font-bold hover:text-indigo-800 transition-colors">
+                <span>സംശയങ്ങൾക്ക്:</span>
+                <a href="https://instagram.com/varmoz.ism" target="_blank" class="underline">varmoz.ism</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const CORRECT_PASS = "990275";
+        
+        const theoryQuestions = [
+            { q: "OpenToonz ഒരു ___ സോഫ്റ്റ്‌വെയർ ആണ്.", a: "2D ആനിമേഷൻ", o: ["വീഡിയോ എഡിറ്റിംഗ്", "3D ആനിമേഷൻ", "2D ആനിമേഷൻ", "ഫോട്ടോ എഡിറ്റിംഗ്"] },
+            { q: "OpenToonz-ൽ ഓരോ ചിത്രങ്ങളെയും വിളിക്കുന്നത് എന്താണ്?", a: "Frame", o: ["Level", "Stage", "Layer", "Frame"] },
+            { q: "മുമ്പത്തെ ഫ്രെയിമിലെ ചിത്രം മങ്ങിക്കാണാൻ ഉപയോഗിക്കുന്ന സംവിധാനം?", a: "Onion Skin", o: ["Ghost mode", "Clear view", "Onion Skin", "Tracing"] },
+            { q: "ആനിമേഷൻ വീഡിയോ ഫയലായി മാറ്റുന്ന പ്രക്രിയ?", a: "Rendering", o: ["Exporting", "Rendering", "Saving", "Linking"] },
+            { q: "OpenToonz-ലെ ലെയറുകൾ അറിയപ്പെടുന്നത് എങ്ങനെ?", a: "Levels", o: ["Sheets", "Pages", "Columns", "Levels"] },
+            { q: "ഒരു സെക്കൻഡിൽ എത്ര ഫ്രെയിമുകൾ വരണമെന്ന് നിശ്ചയിക്കുന്നത്?", a: "FPS", o: ["DPI", "Resolution", "BPM", "FPS"] },
+            { q: "OpenToonz-ൽ കളർ നൽകാൻ ഉപയോഗിക്കുന്ന വിൻഡോ?", a: "Palette", o: ["Palette", "Color Wheel", "Bucket", "Swatch"] },
+            { q: "തുടർച്ചയായ ചിത്രങ്ങൾ വേഗത്തിൽ കാണിക്കുമ്പോൾ ലഭിക്കുന്ന തോന്നൽ?", a: "Persistence of Vision", o: ["Persistence of Vision", "Reflection", "Animation", "Motion Blur"] },
+            { q: "ആനിമേഷനിൽ കീ-ഫ്രെയിമുകൾക്കിടയിലുള്ള മാറ്റം തനിയെ സംഭവിക്കുന്നത്?", a: "Tweening", o: ["Copying", "Fading", "Looping", "Tweening"] },
+            { q: "OpenToonz ഒരു സ്വതന്ത്ര സോഫ്റ്റ്‌വെയർ ആണോ?", a: "അതെ", o: ["അല്ല", "പറയാൻ കഴിയില്ല", "അതെ", "പകുതി"] },
+            { q: "ജിമ്പിലെ ഫയൽ എക്സ്റ്റൻഷൻ?", a: ".xcf", o: [".xcf", ".jpg", ".png", ".svg"] },
+            { q: "വെക്റ്റർ ഗ്രാഫിക്സ് സോഫ്റ്റ്‌വെയർ?", a: "Inkscape", o: ["GIMP", "Photoshop", "Inkscape", "Paint"] },
+            { q: "പൈത്തണിലെ ലൂപ്പ് കമാൻഡ്?", a: "for", o: ["print", "if", "for", "input"] },
+            { q: "ചിത്രം വലുതാക്കുമ്പോൾ വ്യക്തത കുറയാത്തത്?", a: "വെക്റ്റർ", o: ["റാസ്റ്റർ", "വെക്റ്റർ", "ബിറ്റ്മാപ്പ്", "ജെപിജി"] },
+            { q: "പൈത്തൺ ടർട്ടിൽ മുന്നോട്ട് നീങ്ങാൻ?", a: "forward()", o: ["go()", "move()", "step()", "forward()"] },
+            { q: "ഡാറ്റാബേസ് ടേബിളിലെ ഒരു വരിയെ വിളിക്കുന്ന പേര്?", a: "Record", o: ["Record", "Field", "Row", "Line"] },
+            { q: "GIS ഭൂപട നിർമ്മാണത്തിന് ഉപയോഗിക്കുന്നത്?", a: "QGIS", o: ["QGIS", "Python", "GIMP", "Base"] },
+            { q: "പൈത്തണിലെ കമന്റ് ചിഹ്നം?", a: "#", o: ["//", "#", "/*", "--"] },
+            { q: "ഭൂപടത്തിൽ ഉയരം കാണിക്കുന്ന രേഖകൾ?", a: "Contour Lines", o: ["Scale", "Contour Lines", "Legends", "Grid Lines"] },
+            { q: "ഇമെയിൽ വിലാസത്തിലെ പ്രധാന ഘടകം?", a: "@", o: ["#", "$", "&", "@"] }
+        ];
+
+        let timeRemaining = 3600;
+        let timerInterval;
+        let score = 0;
+
+        function shuffleOptions(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function validateLogin() {
+            const pass = document.getElementById('login-pass').value;
+            const name = document.getElementById('student-name').value;
+            const reg = document.getElementById('reg-number').value;
+
+            if (name && reg && pass === CORRECT_PASS) {
+                document.getElementById('login-screen').classList.add('hidden');
+                document.getElementById('exam-content').classList.remove('hidden');
+                document.getElementById('main-header').classList.remove('hidden');
+                document.getElementById('user-info-display').innerText = `വിദ്യാർത്ഥി: ${name} | രജി. നമ്പർ: ${reg}`;
+                renderQuestions();
+                startTimer();
+            } else {
+                document.getElementById('error-msg').classList.remove('hidden');
+            }
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                timeRemaining--;
+                const mins = Math.floor(timeRemaining / 60);
+                const secs = timeRemaining % 60;
+                document.getElementById('timer').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+                if (timeRemaining <= 0) finishExam();
+            }, 1000);
+        }
+
+        function renderQuestions() {
+            const grid = document.getElementById('questions-grid');
+            theoryQuestions.forEach((item, index) => {
+                const qDiv = document.createElement('div');
+                qDiv.className = "p-6 border border-gray-200 rounded-2xl bg-gray-50 transition-all duration-300";
+                qDiv.id = `q-container-${index}`;
+                
+                const shuffledOptions = shuffleOptions([...item.o]);
+
+                qDiv.innerHTML = `
+                    <p class="font-bold mb-4 text-lg text-indigo-900">${index + 1}. ${item.q}</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="options-${index}">
+                        ${shuffledOptions.map(opt => `
+                            <div 
+                                onclick="handleAnswer(${index}, '${opt}', this)"
+                                class="option-box p-4 bg-white border-2 border-gray-100 rounded-xl cursor-pointer transition-all hover:border-indigo-300"
+                            >
+                                <span>${opt}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                    <div id="feedback-${index}" class="mt-3 text-sm font-bold hidden"></div>
+                `;
+                grid.appendChild(qDiv);
+            });
+        }
+
+        function handleAnswer(qIndex, selected, element) {
+            const correct = theoryQuestions[qIndex].a;
+            const container = document.getElementById(`options-${qIndex}`);
+            const feedback = document.getElementById(`feedback-${qIndex}`);
+            const boxes = container.querySelectorAll('.option-box');
+            
+            boxes.forEach(box => {
+                box.classList.add('option-disabled');
+                if (box.innerText.trim() === correct) box.classList.add('option-correct');
+            });
+
+            if (selected === correct) {
+                score++;
+                element.classList.add('option-correct');
+                feedback.innerText = "ശരിയായ ഉത്തരം! ✅";
+                feedback.className = "mt-3 text-sm font-bold text-green-600";
+            } else {
+                element.classList.add('option-wrong');
+                feedback.innerText = `തെറ്റായ ഉത്തരം. ശരിയായ ഉത്തരം: ${correct}`;
+                feedback.className = "mt-3 text-sm font-bold text-red-600";
+            }
+            feedback.classList.remove('hidden');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            let answered = 0;
+            theoryQuestions.forEach((_, i) => {
+                const optContainer = document.getElementById(`options-${i}`);
+                if (optContainer && optContainer.querySelector('.option-disabled')) answered++;
+            });
+            document.getElementById('count').innerText = answered;
+            document.getElementById('progress-bar').style.width = (answered / 20) * 100 + "%";
+
+            if (answered === 20) {
+                const btn = document.getElementById('proceed-btn');
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.classList.add('pulse-button');
+                document.getElementById('lock-msg').innerText = "എല്ലാ ചോദ്യങ്ങളും പൂർത്തിയായി. ഇനി പ്രാക്ടിക്കലിലേക്ക് കടക്കാം.";
+                document.getElementById('lock-msg').className = "text-green-700 font-bold mb-4";
+            }
+        }
+
+        function unlockPractical() {
+            document.getElementById('practical-wrapper').classList.remove('locked-section');
+            document.getElementById('practical-wrapper').classList.add('unlocked-section');
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }
+
+        function finishExam() {
+            clearInterval(timerInterval);
+            document.getElementById('exam-content').classList.add('hidden');
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-data').innerHTML = `
+                <div class="space-y-4">
+                    <p><b>വിദ്യാർത്ഥി:</b> ${document.getElementById('student-name').value}</p>
+                    <p><b>രജിസ്റ്റർ നമ്പർ:</b> ${document.getElementById('reg-number').value}</p>
+                    <div class="bg-indigo-100 p-6 rounded-2xl border border-indigo-200">
+                        <span class="text-xl font-bold">തിയറി സ്കോർ:</span>
+                        <span class="text-3xl font-black text-indigo-700 ml-4">${score} / 20</span>
+                    </div>
+                </div>
+            `;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
